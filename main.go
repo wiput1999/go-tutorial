@@ -94,6 +94,75 @@ func main() {
 	rect := rectangle{3, 4}
 	fmt.Println(rect.area())
 
+	// Echo instance
+	// e := echo.New()
+
+	// // Middleware
+	// e.Use(middleware.Logger())
+	// e.Use(middleware.Recover())
+
+	// // Route => handler
+	// e.GET("/", func(c echo.Context) error {
+	// 	return c.String(http.StatusOK, "Hello, World!\n")
+	// })
+
+	// e.GET("/fizzbuzz/:number", func(c echo.Context) error {
+	// 	num := c.Param("number")
+
+	// 	n, err := strconv.Atoi(num)
+	// 	if err != nil {
+	// 		return c.JSON(http.StatusBadRequest, map[string]string{
+	// 			"message": err.Error(),
+	// 		})
+	// 	}
+
+	// 	if n > 5 {
+	// 		return c.JSON(http.StatusBadRequest, map[string]string{
+	// 			"message": "not support " + num,
+	// 		})
+	// 	}
+
+	// 	return c.JSON(http.StatusOK, map[string]string{
+	// 		"message": fizzbuzz.Say(n),
+	// 	})
+	// })
+
+	// // Start server
+	// e.Logger.Fatal(e.Start(":1323"))
+
+	// Go Routine
+	chN := make(chan int)
+	chQ := make(chan struct{})
+	go fibonacci(chN, chQ)
+	for i := 0; i < 50; i++ {
+		fmt.Println(<-chN)
+	}
+	chQ <- struct{}{}
+
+	// ch := make(chan struct{})
+
+	// go say("geeky", ch)
+	// go say("base", ch)
+	// <-ch
+	// <-ch
+
+}
+
+func say(name string, ch chan struct{}) {
+	fmt.Println(name)
+	ch <- struct{}{}
+}
+
+func fibonacci(chN chan int, chQ chan struct{}) {
+	a, b := 0, 1
+	for {
+		select {
+		case chN <- a:
+			a, b = b, a+b
+		case <-chQ:
+			return
+		}
+	}
 }
 
 type String string
